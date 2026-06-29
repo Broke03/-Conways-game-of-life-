@@ -50,6 +50,9 @@ class LifeSimulationTest {
         SimulationSnapshot snapshot = simulation.getSnapshot();
         assertEquals(0, snapshot.conwayCellCount());
         assertEquals(0, snapshot.totalCellCount());
+        assertFalse(snapshot.cells().containsKey(new GridPosition(10, 10)));
+        assertFalse(snapshot.cells().containsKey(new GridPosition(10, 11)));
+        assertFalse(snapshot.cells().containsKey(new GridPosition(10, 12)));
         assertFalse(snapshot.running());
     }
 
