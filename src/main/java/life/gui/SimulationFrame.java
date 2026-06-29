@@ -82,7 +82,7 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
         titleLabel.setFont(new Font("Georgia", Font.BOLD, 28));
         titleLabel.setForeground(AppPalette.TEXT);
 
-        JLabel subtitleLabel = new JLabel("Left click = selected brush, right click = heart cell, Shift + click = erase, Ctrl + wheel = zoom");
+        JLabel subtitleLabel = new JLabel("Left click = selected brush, right click = alternative cell, Shift + click = erase, Ctrl + wheel = zoom");
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         subtitleLabel.setForeground(AppPalette.MUTED);
 
@@ -129,14 +129,14 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
         sidebar.add(Box.createVerticalStrut(18));
         sidebar.add(createStatRow("Ticks", tickValueLabel));
         sidebar.add(createStatRow("Conway cells", conwayValueLabel));
-        sidebar.add(createStatRow("Heart cells", alternativeValueLabel));
+        sidebar.add(createStatRow("Alternative cells", alternativeValueLabel));
         sidebar.add(createStatRow("Total cells", totalValueLabel));
         sidebar.add(createStatRow("Speed", speedValueLabel));
         sidebar.add(createStatRow("Zoom", zoomValueLabel));
         sidebar.add(Box.createVerticalGlue());
         sidebar.add(createLegendRow("Conway", AppIconFactory.squareIcon(AppPalette.CONWAY)));
         sidebar.add(Box.createVerticalStrut(10));
-        sidebar.add(createLegendRow("Heart cell", AppIconFactory.heartIcon(AppPalette.ALTERNATIVE)));
+        sidebar.add(createLegendRow("Alternative cell", AppIconFactory.alternativeIcon(AppPalette.ALTERNATIVE)));
         sidebar.add(Box.createVerticalStrut(18));
         sidebar.add(createHintLabel("The terminal below mirrors simulation events, but stays read-only."));
 
@@ -158,7 +158,7 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
 
         ButtonGroup buttonGroup = new ButtonGroup();
         JRadioButton conwayButton = createBrushButton("Conway cell", true);
-        JRadioButton alternativeButton = createBrushButton("Heart cell", false);
+        JRadioButton alternativeButton = createBrushButton("Alternative cell", false);
         JRadioButton eraseButton = createBrushButton("Erase cell", false);
 
         conwayButton.addActionListener(event -> controller.setSelectedTool(PlacementTool.CONWAY));

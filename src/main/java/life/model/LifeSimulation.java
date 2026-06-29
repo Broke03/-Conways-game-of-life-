@@ -141,7 +141,7 @@ public final class LifeSimulation implements TickListener {
         }
 
         log(String.format(
-                "Tick %d | Conway: %d | Hearts: %d | Total: %d | Delay: %d ms",
+                "Tick %d | Conway: %d | Alternative: %d | Total: %d | Delay: %d ms",
                 snapshotAfterTick.tickNumber(),
                 snapshotAfterTick.conwayCellCount(),
                 snapshotAfterTick.alternativeCellCount(),

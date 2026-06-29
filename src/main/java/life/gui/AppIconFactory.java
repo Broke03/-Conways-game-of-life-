@@ -97,8 +97,8 @@ public final class AppIconFactory {
         return new PaintedIcon(16, color, graphics -> graphics.fill(new RoundRectangle2D.Double(2, 2, 12, 12, 3, 3)));
     }
 
-    public static Icon heartIcon(Color color) {
-        return new PaintedIcon(16, color, graphics -> graphics.fill(createHeartPath(1.5, 1.5, 13)));
+    public static Icon alternativeIcon(Color color) {
+        return new PaintedIcon(16, color, graphics -> graphics.fill(createAlternativePath(1.5, 1.5, 13)));
     }
 
     @FunctionalInterface
@@ -138,7 +138,7 @@ public final class AppIconFactory {
         }
     }
 
-    public static Path2D createHeartPath(double x, double y, double size) {
+    public static Path2D createAlternativePath(double x, double y, double size) {
         double width = size;
         double height = size;
         Path2D heart = new Path2D.Double();

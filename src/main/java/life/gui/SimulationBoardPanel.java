@@ -147,8 +147,8 @@ public final class SimulationBoardPanel extends JPanel implements SimulationList
             if (cell.getShape() == CellShape.SQUARE) {
                 graphics2D.fillRoundRect(x + inset, y + inset, drawSize, drawSize, 6, 6);
             } else {
-                Path2D heart = AppIconFactory.createHeartPath(x + inset, y + inset, drawSize);
-                graphics2D.fill(heart);
+                Path2D alternative = AppIconFactory.createAlternativePath(x + inset, y + inset, drawSize);
+                graphics2D.fill(alternative);
             }
 
             graphics2D.setColor(resolveOutline(cell.getType()));
@@ -156,8 +156,8 @@ public final class SimulationBoardPanel extends JPanel implements SimulationList
             if (cell.getShape() == CellShape.SQUARE) {
                 graphics2D.drawRoundRect(x + inset, y + inset, drawSize, drawSize, 6, 6);
             } else {
-                Path2D heart = AppIconFactory.createHeartPath(x + inset, y + inset, drawSize);
-                graphics2D.draw(heart);
+                Path2D alternative = AppIconFactory.createAlternativePath(x + inset, y + inset, drawSize);
+                graphics2D.draw(alternative);
             }
         }
     }
