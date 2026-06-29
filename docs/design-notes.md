@@ -20,6 +20,8 @@ Dit zorgt ervoor dat beide soorten elkaar echt kunnen beinvloeden, zonder dat de
 - `Observer pattern`
   `GameClock` houdt listeners bij en stuurt ticks naar subscribers.
   `LifeSimulation` houdt weer GUI-listeners bij en ververst de schermen automatisch.
+  De update-loop draait via een Swing `Timer` op de Event Dispatch Thread, zodat extra
+  thread-synchronisatie (`synchronized`) niet nodig is.
 
 - `Strategy pattern`
   Elke celregel zit in een aparte `CellRule` implementatie.
