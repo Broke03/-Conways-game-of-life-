@@ -68,7 +68,7 @@ public final class GameClock {
 
     public void faster() {
         delayMillis = Math.max(minimumDelayMillis, delayMillis - delayStepMillis);
-        if (timer != null) {
+        if (running && timer != null) {
             timer.setInitialDelay(delayMillis);
             timer.setDelay(delayMillis);
         }
@@ -76,7 +76,7 @@ public final class GameClock {
 
     public void slower() {
         delayMillis = Math.min(maximumDelayMillis, delayMillis + delayStepMillis);
-        if (timer != null) {
+        if (running && timer != null) {
             timer.setInitialDelay(delayMillis);
             timer.setDelay(delayMillis);
         }
