@@ -85,10 +85,11 @@ public final class LifeSimulation implements TickListener {
 
     public void reset() {
         synchronized (lock) {
-            gameClock.reset();
+            gameClock.pause();
+            seedBoard.clear();
             activeBoard = seedBoard.copy();
         }
-        log("Simulation reset to the original seed pattern.");
+        log("Simulation reset — grid cleared.");
         notifyListeners();
     }
 

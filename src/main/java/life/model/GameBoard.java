@@ -69,6 +69,10 @@ public final class GameBoard {
         return Collections.unmodifiableMap(cells);
     }
 
+    public void clear() {
+        cells.clear();
+    }
+
     public GameBoard copy() {
         Map<GridPosition, Cell> copiedCells = new HashMap<>();
         for (Cell cell : cells.values()) {
