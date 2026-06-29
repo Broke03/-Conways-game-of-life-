@@ -16,7 +16,7 @@ public final class SimulationLogPanel extends JPanel implements SimulationLogLis
     private final JTextArea textArea = new JTextArea();
 
     public SimulationLogPanel() {
-        setLayout(new BorderLayout());
+        super(new BorderLayout());
         setOpaque(true);
         setBackground(AppPalette.SURFACE);
 
