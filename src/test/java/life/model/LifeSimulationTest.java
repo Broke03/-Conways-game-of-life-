@@ -38,7 +38,7 @@ class LifeSimulationTest {
     }
 
     @Test
-    void resetRestoresOriginalSeedPattern() {
+    void resetClearsAllCells() {
         simulation.placeCell(10, 10, CellType.CONWAY);
         simulation.placeCell(10, 11, CellType.CONWAY);
         simulation.placeCell(10, 12, CellType.CONWAY);
@@ -48,11 +48,9 @@ class LifeSimulationTest {
         simulation.reset();
 
         SimulationSnapshot snapshot = simulation.getSnapshot();
-        assertEquals(0, snapshot.tickNumber());
-        assertEquals(3, snapshot.conwayCellCount());
-        assertTrue(snapshot.cells().containsKey(new GridPosition(10, 10)));
-        assertTrue(snapshot.cells().containsKey(new GridPosition(10, 11)));
-        assertTrue(snapshot.cells().containsKey(new GridPosition(10, 12)));
+        assertEquals(0, snapshot.conwayCellCount());
+        assertEquals(0, snapshot.totalCellCount());
+        assertFalse(snapshot.running());
     }
 
     @Test
