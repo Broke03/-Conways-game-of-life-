@@ -1,0 +1,123 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+title Conway's Game of Life - Class Diagram
+
+package "life.model" {
+  abstract class Cell {
+    +getPosition() GridPosition
+    +getType() CellType
+    +getShape() CellShape
+    +copyTo(position: GridPosition) Cell
+  }
+  class ConwayCell
+  class AlternativeCell
+  interface CellFactory {
+    +createCell(type: CellType, position: GridPosition) Cell
+  }
+  class DefaultCellFactory
+  interface CellRule {
+    +getCellType() CellType
+    +survives(snapshot: NeighborhoodSnapshot) boolean
+    +isBorn(snapshot: NeighborhoodSnapshot) boolean
+  }
+  class ConwayRule
+  class AlternativeRule
+  class RuleBook {
+    +createDefault() RuleBook
+    +getRule(cellType: CellType) CellRule
+    +determineBirthType(snapshot: NeighborhoodSnapshot) Optional<CellType>
+  }
+  class GameBoard {
+    +addCell(row: int, column: int, type: CellType)
+    +removeCell(row: int, column: int)
+    +nextGeneration() GameBoard
+    +copy() GameBoard
+    +countNeighborhood(position: GridPosition) NeighborhoodSnapshot
+  }
+  class LifeSimulation {
+    +placeCell(row: int, column: int, type: CellType)
+    +removeCell(row: int, column: int)
+    +start()
+    +pause()
+    +resume()
+    +reset()
+    +speedUp()
+    +slowDown()
+    +getSnapshot() SimulationSnapshot
+    +onTick(tickNumber: long)
+  }
+  interface SimulationListener {
+    +onSimulationChanged(snapshot: SimulationSnapshot)
+  }
+  interface SimulationLogListener {
+    +onLogMessage(message: String)
+  }
+  class SimulationSnapshot
+  class NeighborhoodSnapshot
+}
+
+package "life.clock" {
+  class GameClock {
+    +addListener(listener: TickListener)
+    +removeListener(listener: TickListener)
+    +start()
+    +pause()
+    +resume()
+    +reset()
+    +faster()
+    +slower()
+    +tickNow()
+    +shutdown()
+    +getTickNumber() long
+    +getDelayMillis() int
+    +isRunning() boolean
+  }
+  interface TickListener {
+    +onTick(tickNumber: long)
+  }
+}
+
+package "life.controller" {
+  class SimulationController {
+    +start()
+    +pause()
+    +resume()
+    +reset()
+    +speedUp()
+    +slowDown()
+    +handleBoardInteraction(position: GridPosition, event: MouseEvent)
+  }
+}
+
+package "life.gui" {
+  class SimulationFrame
+  class SimulationBoardPanel
+  class SimulationLogPanel
+}
+
+Cell <|-- ConwayCell
+Cell <|-- AlternativeCell
+CellFactory <|.. DefaultCellFactory
+CellRule <|.. ConwayRule
+CellRule <|.. AlternativeRule
+TickListener <|.. LifeSimulation
+SimulationListener <|.. SimulationFrame
+SimulationListener <|.. SimulationBoardPanel
+
+GameBoard --> CellFactory : uses
+GameBoard --> RuleBook : uses
+GameBoard "1" o-- "0..*" Cell : contains
+RuleBook --> CellRule : manages
+LifeSimulation --> GameClock : drives
+LifeSimulation --> GameBoard : keeps seed/active
+LifeSimulation --> SimulationListener : notifies
+LifeSimulation --> SimulationLogListener : logs
+GameClock --> TickListener : notifies
+SimulationController --> LifeSimulation : controls
+SimulationBoardPanel --> SimulationController : forwards clicks
+SimulationFrame --> LifeSimulation : observes
+SimulationFrame --> SimulationController : triggers actions
+SimulationFrame --> SimulationLogPanel : owns
+
+@enduml

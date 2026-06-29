@@ -4,14 +4,14 @@ import life.clock.GameClock;
 import life.clock.TickListener;
 
 import javax.swing.SwingUtilities;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public final class LifeSimulation implements TickListener {
-    private final CopyOnWriteArrayList<SimulationListener> listeners = new CopyOnWriteArrayList<>();
-    private final CopyOnWriteArrayList<SimulationLogListener> logListeners = new CopyOnWriteArrayList<>();
-    private final Object lock = new Object();
+    private final List<SimulationListener> listeners = new ArrayList<>();
+    private final List<SimulationLogListener> logListeners = new ArrayList<>();
     private final GameClock gameClock;
     private GameBoard seedBoard;
     private GameBoard activeBoard;
@@ -41,32 +41,26 @@ public final class LifeSimulation implements TickListener {
     }
 
     public void placeCell(int row, int column, CellType type) {
-        synchronized (lock) {
-            if (gameClock.isRunning()) {
-                return;
-            }
-            seedBoard.addCell(row, column, type);
-            activeBoard = seedBoard.copy();
+        if (gameClock.isRunning()) {
+            return;
         }
+        seedBoard.addCell(row, column, type);
+        activeBoard = seedBoard.copy();
         notifyListeners();
     }
 
     public void removeCell(int row, int column) {
-        synchronized (lock) {
-            if (gameClock.isRunning()) {
-                return;
-            }
-            seedBoard.removeCell(row, column);
-            activeBoard = seedBoard.copy();
+        if (gameClock.isRunning()) {
+            return;
         }
+        seedBoard.removeCell(row, column);
+        activeBoard = seedBoard.copy();
         notifyListeners();
     }
 
     public void start() {
-        synchronized (lock) {
-            activeBoard = seedBoard.copy();
-            gameClock.start();
-        }
+        activeBoard = seedBoard.copy();
+        gameClock.start();
         log("Simulation started at " + gameClock.getDelayMillis() + " ms per tick.");
         notifyListeners();
     }
@@ -84,11 +78,9 @@ public final class LifeSimulation implements TickListener {
     }
 
     public void reset() {
-        synchronized (lock) {
-            gameClock.pause();
-            seedBoard.clear();
-            activeBoard = seedBoard.copy();
-        }
+        gameClock.pause();
+        seedBoard.clear();
+        activeBoard = seedBoard.copy();
         log("Simulation reset — grid cleared.");
         notifyListeners();
     }
@@ -106,40 +98,31 @@ public final class LifeSimulation implements TickListener {
     }
 
     public SimulationSnapshot getSnapshot() {
-        synchronized (lock) {
-            Map<GridPosition, Cell> copiedCells = new HashMap<>(activeBoard.getCellsView());
-            return new SimulationSnapshot(
-                    gameClock.getTickNumber(),
-                    gameClock.getDelayMillis(),
-                    gameClock.isRunning(),
-                    activeBoard.getCellCount(CellType.CONWAY),
-                    activeBoard.getCellCount(CellType.ALTERNATIVE),
-                    activeBoard.getRows(),
-                    activeBoard.getColumns(),
-                    copiedCells
-            );
-        }
+        Map<GridPosition, Cell> copiedCells = new HashMap<>(activeBoard.getCellsView());
+        return new SimulationSnapshot(
+                gameClock.getTickNumber(),
+                gameClock.getDelayMillis(),
+                gameClock.isRunning(),
+                activeBoard.getCellCount(CellType.CONWAY),
+                activeBoard.getCellCount(CellType.ALTERNATIVE),
+                activeBoard.getRows(),
+                activeBoard.getColumns(),
+                copiedCells
+        );
     }
 
     public int getCenterRow() {
-        synchronized (lock) {
-            return activeBoard.getRows() / 2;
-        }
+        return activeBoard.getRows() / 2;
     }
 
     public int getCenterColumn() {
-        synchronized (lock) {
-            return activeBoard.getColumns() / 2;
-        }
+        return activeBoard.getColumns() / 2;
     }
 
     @Override
     public void onTick(long tickNumber) {
-        SimulationSnapshot snapshotAfterTick;
-        synchronized (lock) {
-            activeBoard = activeBoard.nextGeneration();
-            snapshotAfterTick = getSnapshot();
-        }
+        activeBoard = activeBoard.nextGeneration();
+        SimulationSnapshot snapshotAfterTick = getSnapshot();
 
         log(String.format(
                 "Tick %d | Conway: %d | Alternative: %d | Total: %d | Delay: %d ms",
@@ -159,7 +142,7 @@ public final class LifeSimulation implements TickListener {
 
     private void notifyListeners(SimulationSnapshot snapshot) {
         SwingUtilities.invokeLater(() -> {
-            for (SimulationListener listener : listeners) {
+            for (SimulationListener listener : new ArrayList<>(listeners)) {
                 listener.onSimulationChanged(snapshot);
             }
         });
@@ -168,7 +151,7 @@ public final class LifeSimulation implements TickListener {
     private void log(String message) {
         System.out.println(message);
         SwingUtilities.invokeLater(() -> {
-            for (SimulationLogListener listener : logListeners) {
+            for (SimulationLogListener listener : new ArrayList<>(logListeners)) {
                 listener.onLogMessage(message);
             }
         });
