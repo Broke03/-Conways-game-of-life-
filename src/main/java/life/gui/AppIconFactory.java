@@ -97,8 +97,8 @@ public final class AppIconFactory {
         return new PaintedIcon(16, color, graphics -> graphics.fill(new RoundRectangle2D.Double(2, 2, 12, 12, 3, 3)));
     }
 
-    public static Icon circleIcon(Color color) {
-        return new PaintedIcon(16, color, graphics -> graphics.fill(new Ellipse2D.Double(2, 2, 12, 12)));
+    public static Icon heartIcon(Color color) {
+        return new PaintedIcon(16, color, graphics -> graphics.fill(createHeartPath(1.5, 1.5, 13)));
     }
 
     @FunctionalInterface
@@ -136,5 +136,18 @@ public final class AppIconFactory {
         public int getIconHeight() {
             return size;
         }
+    }
+
+    public static Path2D createHeartPath(double x, double y, double size) {
+        double width = size;
+        double height = size;
+        Path2D heart = new Path2D.Double();
+        heart.moveTo(x + width / 2.0, y + height * 0.92);
+        heart.curveTo(x + width * 0.03, y + height * 0.60, x + width * 0.02, y + height * 0.18, x + width * 0.28, y + height * 0.18);
+        heart.curveTo(x + width * 0.42, y + height * 0.18, x + width * 0.48, y + height * 0.30, x + width / 2.0, y + height * 0.38);
+        heart.curveTo(x + width * 0.52, y + height * 0.30, x + width * 0.58, y + height * 0.18, x + width * 0.72, y + height * 0.18);
+        heart.curveTo(x + width * 0.98, y + height * 0.18, x + width * 0.97, y + height * 0.60, x + width / 2.0, y + height * 0.92);
+        heart.closePath();
+        return heart;
     }
 }

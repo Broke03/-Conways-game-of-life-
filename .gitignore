@@ -1,7 +1,12 @@
 ### IntelliJ IDEA ###
 out/
 build/
+target/
 .deps/
+.idea/compiler.xml
+.idea/encodings.xml
+.idea/jarRepositories.xml
+.idea/workspace.xml
 !**/src/main/**/out/
 !**/src/test/**/out/
 .kotlin

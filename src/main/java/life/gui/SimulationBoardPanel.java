@@ -22,6 +22,7 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.Path2D;
 
 public final class SimulationBoardPanel extends JPanel implements SimulationListener {
     private static final int BASE_CELL_SIZE = 20;
@@ -120,7 +121,7 @@ public final class SimulationBoardPanel extends JPanel implements SimulationList
     }
 
     private void drawBackgroundGrid(Graphics2D graphics2D, int startRow, int endRow, int startColumn, int endColumn, int cellSize) {
-        graphics2D.setColor(Color.WHITE);
+        graphics2D.setColor(AppPalette.GRID_DARK);
         graphics2D.fillRect(0, 0, getWidth(), getHeight());
 
         graphics2D.setColor(AppPalette.GRID);
@@ -146,7 +147,8 @@ public final class SimulationBoardPanel extends JPanel implements SimulationList
             if (cell.getShape() == CellShape.SQUARE) {
                 graphics2D.fillRoundRect(x + inset, y + inset, drawSize, drawSize, 6, 6);
             } else {
-                graphics2D.fillOval(x + inset, y + inset, drawSize, drawSize);
+                Path2D heart = AppIconFactory.createHeartPath(x + inset, y + inset, drawSize);
+                graphics2D.fill(heart);
             }
 
             graphics2D.setColor(resolveOutline(cell.getType()));
@@ -154,7 +156,8 @@ public final class SimulationBoardPanel extends JPanel implements SimulationList
             if (cell.getShape() == CellShape.SQUARE) {
                 graphics2D.drawRoundRect(x + inset, y + inset, drawSize, drawSize, 6, 6);
             } else {
-                graphics2D.drawOval(x + inset, y + inset, drawSize, drawSize);
+                Path2D heart = AppIconFactory.createHeartPath(x + inset, y + inset, drawSize);
+                graphics2D.draw(heart);
             }
         }
     }

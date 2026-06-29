@@ -17,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -26,6 +27,7 @@ import java.awt.Insets;
 public final class SimulationFrame extends JFrame implements SimulationListener {
     private final LifeSimulation simulation;
     private final SimulationBoardPanel boardPanel;
+    private final SimulationLogPanel logPanel = new SimulationLogPanel();
     private final JLabel tickValueLabel = createValueLabel();
     private final JLabel conwayValueLabel = createValueLabel();
     private final JLabel alternativeValueLabel = createValueLabel();
@@ -49,11 +51,11 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
         configureScrollPane(boardScrollPane);
 
         add(createHeader(controller), BorderLayout.NORTH);
-        add(boardScrollPane, BorderLayout.CENTER);
-        add(createSidebar(controller), BorderLayout.EAST);
+        add(createMainArea(boardScrollPane, controller), BorderLayout.CENTER);
 
         simulation.addListener(this);
         simulation.addListener(boardPanel);
+        simulation.addLogListener(logPanel);
         centerViewport();
     }
 
@@ -76,11 +78,11 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
         JPanel titlePanel = createCardPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
 
-        JLabel titleLabel = new JLabel("Conway and Alternative Life");
+        JLabel titleLabel = new JLabel("Aqua Life Garden");
         titleLabel.setFont(new Font("Georgia", Font.BOLD, 28));
         titleLabel.setForeground(AppPalette.TEXT);
 
-        JLabel subtitleLabel = new JLabel("Left click = selected brush, right click = alternative, Shift + click = erase, Ctrl + wheel = zoom");
+        JLabel subtitleLabel = new JLabel("Left click = selected brush, right click = heart cell, Shift + click = erase, Ctrl + wheel = zoom");
         subtitleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         subtitleLabel.setForeground(AppPalette.MUTED);
 
@@ -108,7 +110,7 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
         sidebar.setPreferredSize(new Dimension(260, 560));
 
-        JLabel panelTitle = new JLabel("Simulation panel");
+        JLabel panelTitle = new JLabel("Control deck");
         panelTitle.setFont(new Font("Georgia", Font.BOLD, 22));
         panelTitle.setForeground(AppPalette.TEXT);
 
@@ -127,16 +129,16 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
         sidebar.add(Box.createVerticalStrut(18));
         sidebar.add(createStatRow("Ticks", tickValueLabel));
         sidebar.add(createStatRow("Conway cells", conwayValueLabel));
-        sidebar.add(createStatRow("Alternative cells", alternativeValueLabel));
+        sidebar.add(createStatRow("Heart cells", alternativeValueLabel));
         sidebar.add(createStatRow("Total cells", totalValueLabel));
         sidebar.add(createStatRow("Speed", speedValueLabel));
         sidebar.add(createStatRow("Zoom", zoomValueLabel));
         sidebar.add(Box.createVerticalGlue());
         sidebar.add(createLegendRow("Conway", AppIconFactory.squareIcon(AppPalette.CONWAY)));
         sidebar.add(Box.createVerticalStrut(10));
-        sidebar.add(createLegendRow("Alternative", AppIconFactory.circleIcon(AppPalette.ALTERNATIVE)));
+        sidebar.add(createLegendRow("Heart cell", AppIconFactory.heartIcon(AppPalette.ALTERNATIVE)));
         sidebar.add(Box.createVerticalStrut(18));
-        sidebar.add(createHintLabel("Reset keeps your original pattern, so you can test again quickly."));
+        sidebar.add(createHintLabel("The terminal below mirrors simulation events, but stays read-only."));
 
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setOpaque(false);
@@ -156,7 +158,7 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
 
         ButtonGroup buttonGroup = new ButtonGroup();
         JRadioButton conwayButton = createBrushButton("Conway cell", true);
-        JRadioButton alternativeButton = createBrushButton("Alternative cell", false);
+        JRadioButton alternativeButton = createBrushButton("Heart cell", false);
         JRadioButton eraseButton = createBrushButton("Erase cell", false);
 
         conwayButton.addActionListener(event -> controller.setSelectedTool(PlacementTool.CONWAY));
@@ -243,6 +245,22 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
                 BorderFactory.createEmptyBorder(16, 16, 16, 16)
         ));
         return panel;
+    }
+
+    private JComponent createMainArea(JScrollPane boardScrollPane, SimulationController controller) {
+        JPanel rightColumn = new JPanel(new BorderLayout(0, 16));
+        rightColumn.setOpaque(false);
+        rightColumn.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 18));
+        rightColumn.add(createSidebar(controller), BorderLayout.NORTH);
+        rightColumn.add(logPanel, BorderLayout.CENTER);
+
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, boardScrollPane, rightColumn);
+        splitPane.setResizeWeight(0.76);
+        splitPane.setDividerSize(10);
+        splitPane.setBorder(BorderFactory.createEmptyBorder());
+        splitPane.setOpaque(false);
+        splitPane.setBackground(AppPalette.BACKGROUND);
+        return splitPane;
     }
 
     private void configureScrollPane(JScrollPane scrollPane) {
