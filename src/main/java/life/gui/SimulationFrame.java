@@ -37,10 +37,10 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
     private final JLabel statusLabel = new JLabel("Editing mode");
 
     public SimulationFrame(LifeSimulation simulation, SimulationController controller) {
+        super("Conway and Alternative Life");
         this.simulation = simulation;
         this.boardPanel = new SimulationBoardPanel(controller, simulation.getSnapshot());
 
-        setTitle("Conway and Alternative Life");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1280, 700));
         getContentPane().setBackground(AppPalette.BACKGROUND);

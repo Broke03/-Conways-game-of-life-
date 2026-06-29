@@ -1,123 +1,316 @@
 @startuml
 skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam linetype ortho
 
 title Conway's Game of Life - Class Diagram
 
-package "life.model" {
-  abstract class Cell {
-    +getPosition() GridPosition
-    +getType() CellType
-    +getShape() CellShape
-    +copyTo(position: GridPosition) Cell
-  }
-  class ConwayCell
-  class AlternativeCell
-  interface CellFactory {
-    +createCell(type: CellType, position: GridPosition) Cell
-  }
-  class DefaultCellFactory
-  interface CellRule {
-    +getCellType() CellType
-    +survives(snapshot: NeighborhoodSnapshot) boolean
-    +isBorn(snapshot: NeighborhoodSnapshot) boolean
-  }
-  class ConwayRule
-  class AlternativeRule
-  class RuleBook {
-    +createDefault() RuleBook
-    +getRule(cellType: CellType) CellRule
-    +determineBirthType(snapshot: NeighborhoodSnapshot) Optional<CellType>
-  }
-  class GameBoard {
-    +addCell(row: int, column: int, type: CellType)
-    +removeCell(row: int, column: int)
-    +nextGeneration() GameBoard
-    +copy() GameBoard
-    +countNeighborhood(position: GridPosition) NeighborhoodSnapshot
-  }
-  class LifeSimulation {
-    +placeCell(row: int, column: int, type: CellType)
-    +removeCell(row: int, column: int)
-    +start()
-    +pause()
-    +resume()
-    +reset()
-    +speedUp()
-    +slowDown()
-    +getSnapshot() SimulationSnapshot
-    +onTick(tickNumber: long)
-  }
-  interface SimulationListener {
-    +onSimulationChanged(snapshot: SimulationSnapshot)
-  }
-  interface SimulationLogListener {
-    +onLogMessage(message: String)
-  }
-  class SimulationSnapshot
-  class NeighborhoodSnapshot
+' ─────────────────────────────────────────
+' External Swing base classes (abbreviated)
+' ─────────────────────────────────────────
+package "javax.swing" {
+  class JFrame <<Swing>>
+  class JPanel <<Swing>>
+  class JButton <<Swing>>
 }
 
+' ─────────────────────────────────────────
+package "life.main" {
+  class Main <<final>> {
+    +{static} main(args: String[]): void
+  }
+}
+
+' ─────────────────────────────────────────
 package "life.clock" {
-  class GameClock {
-    +addListener(listener: TickListener)
-    +removeListener(listener: TickListener)
-    +start()
-    +pause()
-    +resume()
-    +reset()
-    +faster()
-    +slower()
-    +tickNow()
-    +shutdown()
-    +getTickNumber() long
-    +getDelayMillis() int
-    +isRunning() boolean
-  }
   interface TickListener {
-    +onTick(tickNumber: long)
+    +onTick(tickNumber: long): void
+  }
+  class GameClock <<final>> {
+    -delayMillis: int
+    -minimumDelayMillis: int
+    -maximumDelayMillis: int
+    -running: boolean
+    -tickNumber: long
+    +GameClock(initialDelay: int, min: int, max: int)
+    +addListener(listener: TickListener): void
+    +removeListener(listener: TickListener): void
+    +start(): void
+    +pause(): void
+    +resume(): void
+    +reset(): void
+    +faster(): void
+    +slower(): void
+    +tickNow(): void
+    +shutdown(): void
+    +getTickNumber(): long
+    +getDelayMillis(): int
+    +isRunning(): boolean
   }
 }
 
+' ─────────────────────────────────────────
 package "life.controller" {
-  class SimulationController {
-    +start()
-    +pause()
-    +resume()
-    +reset()
-    +speedUp()
-    +slowDown()
-    +handleBoardInteraction(position: GridPosition, event: MouseEvent)
+  enum PlacementTool {
+    CONWAY
+    ALTERNATIVE
+    ERASE
+  }
+  class SimulationController <<final>> {
+    -selectedTool: PlacementTool
+    +SimulationController(simulation: LifeSimulation)
+    +setSelectedTool(tool: PlacementTool): void
+    +getSelectedTool(): PlacementTool
+    +start(): void
+    +pause(): void
+    +resume(): void
+    +reset(): void
+    +speedUp(): void
+    +slowDown(): void
+    +handleBoardInteraction(position: GridPosition, event: MouseEvent): void
   }
 }
 
-package "life.gui" {
-  class SimulationFrame
-  class SimulationBoardPanel
-  class SimulationLogPanel
+' ─────────────────────────────────────────
+package "life.model" {
+
+  enum CellType {
+    CONWAY
+    ALTERNATIVE
+  }
+  enum CellShape {
+    SQUARE
+    ALTERNATIVE
+  }
+
+  abstract class Cell {
+    -position: GridPosition
+    #Cell(position: GridPosition)
+    +getPosition(): GridPosition
+    +{abstract} getType(): CellType
+    +{abstract} getShape(): CellShape
+    +{abstract} copyTo(position: GridPosition): Cell
+  }
+  class ConwayCell <<final>> {
+    +ConwayCell(position: GridPosition)
+    +getType(): CellType
+    +getShape(): CellShape
+    +copyTo(position: GridPosition): Cell
+  }
+  class AlternativeCell <<final>> {
+    +AlternativeCell(position: GridPosition)
+    +getType(): CellType
+    +getShape(): CellShape
+    +copyTo(position: GridPosition): Cell
+  }
+
+  interface CellFactory {
+    +createCell(type: CellType, position: GridPosition): Cell
+  }
+  class DefaultCellFactory <<final>> {
+    +createCell(type: CellType, position: GridPosition): Cell
+  }
+
+  ' ── Strategy pattern ──────────────────
+  interface CellRule <<Strategy>> {
+    +getCellType(): CellType
+    +survives(snapshot: NeighborhoodSnapshot): boolean
+    +isBorn(snapshot: NeighborhoodSnapshot): boolean
+  }
+  note right of CellRule
+    <<Strategy Pattern>>
+    Interchangeable survival/birth
+    algorithms per cell type.
+  end note
+  class ConwayRule <<final>> {
+    +getCellType(): CellType
+    +survives(snapshot: NeighborhoodSnapshot): boolean
+    +isBorn(snapshot: NeighborhoodSnapshot): boolean
+  }
+  class AlternativeRule <<final>> {
+    +getCellType(): CellType
+    +survives(snapshot: NeighborhoodSnapshot): boolean
+    +isBorn(snapshot: NeighborhoodSnapshot): boolean
+  }
+
+  class RuleBook <<final>> {
+    +{static} createDefault(): RuleBook
+    +getRule(cellType: CellType): CellRule
+    +determineBirthType(snapshot: NeighborhoodSnapshot): Optional<CellType>
+  }
+
+  class GridPosition <<record>> {
+    +row(): int
+    +column(): int
+    +isWithin(rows: int, columns: int): boolean
+  }
+  class NeighborhoodSnapshot <<final>> {
+    +sameTypeNeighbors(cellType: CellType): int
+    +totalNeighbors(): int
+  }
+  class SimulationSnapshot <<record>> {
+    +tickNumber(): long
+    +delayMillis(): int
+    +running(): boolean
+    +conwayCellCount(): int
+    +alternativeCellCount(): int
+    +rows(): int
+    +columns(): int
+    +cells(): Map<GridPosition, Cell>
+    +totalCellCount(): int
+  }
+
+  class GameBoard <<final>> {
+    -rows: int
+    -columns: int
+    +GameBoard(rows: int, columns: int, cellFactory: CellFactory, ruleBook: RuleBook)
+    +addCell(row: int, column: int, type: CellType): void
+    +removeCell(row: int, column: int): void
+    +nextGeneration(): GameBoard
+    +copy(): GameBoard
+    +countNeighborhood(position: GridPosition): NeighborhoodSnapshot
+    +getCellCount(type: CellType): int
+    +getCellsView(): Map<GridPosition, Cell>
+  }
+
+  ' ── Observer pattern ──────────────────
+  interface SimulationListener <<Observer>> {
+    +onSimulationChanged(snapshot: SimulationSnapshot): void
+  }
+  note right of SimulationListener
+    <<Observer Pattern>>
+    UI components subscribe to
+    receive simulation state updates.
+  end note
+  interface SimulationLogListener <<Observer>> {
+    +onLogMessage(message: String): void
+  }
+  note right of SimulationLogListener
+    <<Observer Pattern>>
+    Log panel subscribes to receive
+    simulation log messages.
+  end note
+
+  class LifeSimulation <<final>> {
+    +LifeSimulation(rows: int, columns: int, cellFactory: CellFactory, ruleBook: RuleBook, clock: GameClock)
+    +addListener(listener: SimulationListener): void
+    +removeListener(listener: SimulationListener): void
+    +addLogListener(listener: SimulationLogListener): void
+    +removeLogListener(listener: SimulationLogListener): void
+    +placeCell(row: int, column: int, type: CellType): void
+    +removeCell(row: int, column: int): void
+    +start(): void
+    +pause(): void
+    +resume(): void
+    +reset(): void
+    +speedUp(): void
+    +slowDown(): void
+    +getSnapshot(): SimulationSnapshot
+    +getCenterRow(): int
+    +getCenterColumn(): int
+    +onTick(tickNumber: long): void
+  }
 }
 
-Cell <|-- ConwayCell
-Cell <|-- AlternativeCell
+' ─────────────────────────────────────────
+package "life.gui" {
+  class AppPalette <<final>> {
+    +{static} BACKGROUND: Color
+    +{static} SURFACE: Color
+    +{static} PRIMARY: Color
+    +{static} TEXT: Color
+    +{static} MUTED: Color
+    +{static} CONWAY: Color
+    +{static} ALTERNATIVE: Color
+  }
+  class AppIconFactory <<final>> {
+    +{static} playIcon(): Icon
+    +{static} pauseIcon(): Icon
+    +{static} resetIcon(): Icon
+    +{static} zoomInIcon(): Icon
+    +{static} zoomOutIcon(): Icon
+  }
+
+  class StyledButton <<final>> {
+    +StyledButton(text: String, icon: Icon)
+  }
+
+  class SimulationLogPanel <<final>> {
+    -textArea: JTextArea
+    +SimulationLogPanel()
+    +onLogMessage(message: String): void
+  }
+
+  class SimulationBoardPanel <<final>> {
+    -zoomFactor: double
+    +SimulationBoardPanel(controller: SimulationController, initialSnapshot: SimulationSnapshot)
+    +attachScrollPane(scrollPane: JScrollPane): void
+    +zoomIn(): void
+    +zoomOut(): void
+    +getZoomFactor(): double
+    +getScaledCellSize(): int
+    +onSimulationChanged(snapshot: SimulationSnapshot): void
+    #paintComponent(graphics: Graphics): void
+  }
+
+  class SimulationFrame <<final>> {
+    +SimulationFrame(simulation: LifeSimulation, controller: SimulationController)
+    +onSimulationChanged(snapshot: SimulationSnapshot): void
+  }
+}
+
+' ─────────────────────────────────────────
+' Swing inheritance (super() calls)
+' ─────────────────────────────────────────
+JFrame <|-- SimulationFrame : extends\nsuper("Conway and Alternative Life")
+JPanel <|-- SimulationBoardPanel : extends\nsuper()
+JPanel <|-- SimulationLogPanel : extends\nsuper(new BorderLayout())
+JButton <|-- StyledButton : extends\nsuper(text, icon)
+
+' ─────────────────────────────────────────
+' Model inheritance
+' ─────────────────────────────────────────
+Cell <|-- ConwayCell : extends\nsuper(position)
+Cell <|-- AlternativeCell : extends\nsuper(position)
+
+' ─────────────────────────────────────────
+' Interface implementations
+' ─────────────────────────────────────────
 CellFactory <|.. DefaultCellFactory
 CellRule <|.. ConwayRule
 CellRule <|.. AlternativeRule
 TickListener <|.. LifeSimulation
 SimulationListener <|.. SimulationFrame
 SimulationListener <|.. SimulationBoardPanel
+SimulationLogListener <|.. SimulationLogPanel
 
-GameBoard --> CellFactory : uses
-GameBoard --> RuleBook : uses
-GameBoard "1" o-- "0..*" Cell : contains
-RuleBook --> CellRule : manages
-LifeSimulation --> GameClock : drives
-LifeSimulation --> GameBoard : keeps seed/active
-LifeSimulation --> SimulationListener : notifies
-LifeSimulation --> SimulationLogListener : logs
-GameClock --> TickListener : notifies
+' ─────────────────────────────────────────
+' Associations
+' ─────────────────────────────────────────
+Main --> LifeSimulation : creates
+Main --> SimulationController : creates
+Main --> SimulationFrame : creates
+
+GameClock --> TickListener : notifies *
+
 SimulationController --> LifeSimulation : controls
-SimulationBoardPanel --> SimulationController : forwards clicks
-SimulationFrame --> LifeSimulation : observes
+SimulationController --> PlacementTool : uses
+
+LifeSimulation --> GameClock : drives
+LifeSimulation "1" *-- "2" GameBoard : seed + active
+LifeSimulation --> SimulationListener : notifies *
+LifeSimulation --> SimulationLogListener : logs *
+
+GameBoard --> CellFactory : creates cells via
+GameBoard --> RuleBook : applies rules via
+GameBoard "1" o-- "0..*" Cell : contains
+
+RuleBook --> CellRule : manages *
+
 SimulationFrame --> SimulationController : triggers actions
+SimulationFrame --> SimulationBoardPanel : owns
 SimulationFrame --> SimulationLogPanel : owns
+
+SimulationBoardPanel --> SimulationController : forwards clicks
 
 @enduml
