@@ -80,7 +80,7 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
         JPanel titlePanel = createCardPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
 
-        JLabel titleLabel = new JLabel("Aqua Life Garden");
+        JLabel titleLabel = new JLabel("conway game of life");
         titleLabel.setFont(new Font("Georgia", Font.BOLD, 28));
         titleLabel.setForeground(AppPalette.TEXT);
 
