@@ -12,7 +12,7 @@ public final class AlternativeCell extends Cell {
 
     @Override
     public CellShape getShape() {
-        return CellShape.CIRCLE;
+        return CellShape.HEART;
     }
 
     @Override
