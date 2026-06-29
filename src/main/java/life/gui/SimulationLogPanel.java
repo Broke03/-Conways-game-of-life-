@@ -19,20 +19,16 @@ public final class SimulationLogPanel extends JPanel implements SimulationLogLis
         setLayout(new BorderLayout());
         setOpaque(true);
         setBackground(AppPalette.SURFACE);
-        setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(AppPalette.SURFACE_STRONG, 1, true),
-                BorderFactory.createEmptyBorder(8, 8, 8, 8)
-        ));
 
         TitledBorder titledBorder = BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(AppPalette.SURFACE_STRONG, 1, true),
                 "Simulator Terminal"
         );
         titledBorder.setTitleColor(AppPalette.PRIMARY_DEEP);
-        titledBorder.setTitleFont(new Font("Georgia", Font.BOLD, 16));
+        titledBorder.setTitleFont(new Font("Georgia", Font.BOLD, 14));
         setBorder(BorderFactory.createCompoundBorder(
                 titledBorder,
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
+                BorderFactory.createEmptyBorder(6, 8, 8, 8)
         ));
 
         textArea.setEditable(false);
@@ -47,7 +43,7 @@ public final class SimulationLogPanel extends JPanel implements SimulationLogLis
 
         JScrollPane scrollPane = new JScrollPane(textArea);
         scrollPane.setBorder(BorderFactory.createLineBorder(AppPalette.PRIMARY_DEEP, 1, true));
-        scrollPane.setPreferredSize(new Dimension(320, 260));
+        scrollPane.setPreferredSize(new Dimension(240, 160));
 
         add(scrollPane, BorderLayout.CENTER);
     }

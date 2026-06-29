@@ -42,13 +42,15 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
 
         setTitle("Conway and Alternative Life");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(1280, 820));
+        setMinimumSize(new Dimension(1280, 700));
         getContentPane().setBackground(AppPalette.BACKGROUND);
-        setLayout(new BorderLayout(18, 18));
+        setLayout(new BorderLayout(10, 10));
 
         JScrollPane boardScrollPane = new JScrollPane(boardPanel);
         boardPanel.attachScrollPane(boardScrollPane);
         configureScrollPane(boardScrollPane);
+
+        logPanel.setMinimumSize(new Dimension(0, 120));
 
         add(createHeader(controller), BorderLayout.NORTH);
         add(createMainArea(boardScrollPane, controller), BorderLayout.CENTER);
@@ -73,7 +75,7 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
     private JComponent createHeader(SimulationController controller) {
         JPanel header = new JPanel(new BorderLayout(16, 0));
         header.setBackground(AppPalette.BACKGROUND);
-        header.setBorder(BorderFactory.createEmptyBorder(16, 18, 0, 18));
+        header.setBorder(BorderFactory.createEmptyBorder(8, 18, 0, 18));
 
         JPanel titlePanel = createCardPanel();
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.Y_AXIS));
@@ -108,7 +110,7 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
     private JComponent createSidebar(SimulationController controller) {
         JPanel sidebar = createCardPanel();
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setPreferredSize(new Dimension(260, 560));
+        sidebar.setPreferredSize(new Dimension(240, 320));
 
         JLabel panelTitle = new JLabel("Control deck");
         panelTitle.setFont(new Font("Georgia", Font.BOLD, 22));
@@ -118,15 +120,15 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
         statusLabel.setForeground(AppPalette.PRIMARY);
 
         sidebar.add(panelTitle);
-        sidebar.add(Box.createVerticalStrut(8));
+        sidebar.add(Box.createVerticalStrut(4));
         sidebar.add(statusLabel);
-        sidebar.add(Box.createVerticalStrut(18));
+        sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(new JSeparator(SwingConstants.HORIZONTAL));
-        sidebar.add(Box.createVerticalStrut(18));
+        sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(createBrushSection(controller));
-        sidebar.add(Box.createVerticalStrut(18));
+        sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(new JSeparator(SwingConstants.HORIZONTAL));
-        sidebar.add(Box.createVerticalStrut(18));
+        sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(createStatRow("Ticks", tickValueLabel));
         sidebar.add(createStatRow("Conway cells", conwayValueLabel));
         sidebar.add(createStatRow("Alternative cells", alternativeValueLabel));
@@ -135,14 +137,14 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
         sidebar.add(createStatRow("Zoom", zoomValueLabel));
         sidebar.add(Box.createVerticalGlue());
         sidebar.add(createLegendRow("Conway", AppIconFactory.squareIcon(AppPalette.CONWAY)));
-        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(Box.createVerticalStrut(6));
         sidebar.add(createLegendRow("Alternative cell", AppIconFactory.alternativeIcon(AppPalette.ALTERNATIVE)));
-        sidebar.add(Box.createVerticalStrut(18));
+        sidebar.add(Box.createVerticalStrut(8));
         sidebar.add(createHintLabel("The terminal below mirrors simulation events, but stays read-only."));
 
         JPanel wrapper = new JPanel(new BorderLayout());
         wrapper.setOpaque(false);
-        wrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 18));
+        wrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
         wrapper.add(sidebar, BorderLayout.CENTER);
         return wrapper;
     }
@@ -170,11 +172,11 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
         buttonGroup.add(eraseButton);
 
         panel.add(title);
-        panel.add(Box.createVerticalStrut(10));
+        panel.add(Box.createVerticalStrut(6));
         panel.add(conwayButton);
-        panel.add(Box.createVerticalStrut(6));
+        panel.add(Box.createVerticalStrut(4));
         panel.add(alternativeButton);
-        panel.add(Box.createVerticalStrut(6));
+        panel.add(Box.createVerticalStrut(4));
         panel.add(eraseButton);
         return panel;
     }
@@ -242,17 +244,23 @@ public final class SimulationFrame extends JFrame implements SimulationListener 
         panel.setBackground(AppPalette.SURFACE);
         panel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(AppPalette.SURFACE_STRONG, 1, true),
-                BorderFactory.createEmptyBorder(16, 16, 16, 16)
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
         return panel;
     }
 
     private JComponent createMainArea(JScrollPane boardScrollPane, SimulationController controller) {
-        JPanel rightColumn = new JPanel(new BorderLayout(0, 16));
+        JSplitPane rightSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, createSidebar(controller), logPanel);
+        rightSplit.setResizeWeight(0.55);
+        rightSplit.setDividerSize(6);
+        rightSplit.setBorder(BorderFactory.createEmptyBorder());
+        rightSplit.setOpaque(false);
+        rightSplit.setBackground(AppPalette.BACKGROUND);
+
+        JPanel rightColumn = new JPanel(new BorderLayout());
         rightColumn.setOpaque(false);
-        rightColumn.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 18));
-        rightColumn.add(createSidebar(controller), BorderLayout.NORTH);
-        rightColumn.add(logPanel, BorderLayout.CENTER);
+        rightColumn.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 10));
+        rightColumn.add(rightSplit, BorderLayout.CENTER);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, boardScrollPane, rightColumn);
         splitPane.setResizeWeight(0.76);
