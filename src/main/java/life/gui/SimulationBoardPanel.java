@@ -10,7 +10,6 @@ import life.model.SimulationSnapshot;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -47,13 +46,6 @@ public final class SimulationBoardPanel extends JPanel implements SimulationList
             }
 
             @Override
-            public void mouseDragged(MouseEvent event) {
-                if (SwingUtilities.isLeftMouseButton(event)) {
-                    handleBoardClick(event);
-                }
-            }
-
-            @Override
             public void mouseWheelMoved(MouseWheelEvent event) {
                 if (event.isControlDown()) {
                     double factor = event.getWheelRotation() < 0 ? 1.12 : 0.88;
@@ -64,7 +56,6 @@ public final class SimulationBoardPanel extends JPanel implements SimulationList
         };
 
         addMouseListener(mouseAdapter);
-        addMouseMotionListener(mouseAdapter);
         addMouseWheelListener(mouseAdapter);
         updatePreferredSize();
     }
