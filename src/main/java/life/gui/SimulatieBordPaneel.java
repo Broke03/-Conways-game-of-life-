@@ -10,7 +10,6 @@ import life.model.SimulatieOpname;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -47,13 +46,6 @@ public final class SimulatieBordPaneel extends JPanel implements SimulatieLuiste
             }
 
             @Override
-            public void mouseDragged(MouseEvent gebeurtenis) {
-                if (SwingUtilities.isLeftMouseButton(gebeurtenis)) {
-                    verwerkBordKlik(gebeurtenis);
-                }
-            }
-
-            @Override
             public void mouseWheelMoved(MouseWheelEvent gebeurtenis) {
                 if (gebeurtenis.isControlDown()) {
                     double factor = gebeurtenis.getWheelRotation() < 0 ? 1.12 : 0.88;
@@ -64,7 +56,6 @@ public final class SimulatieBordPaneel extends JPanel implements SimulatieLuiste
         };
 
         addMouseListener(muisAdapter);
-        addMouseMotionListener(muisAdapter);
         addMouseWheelListener(muisAdapter);
         werkVoorkeurGrootteBij();
     }
