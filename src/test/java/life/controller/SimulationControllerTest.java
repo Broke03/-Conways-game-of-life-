@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import javax.swing.JPanel;
 import java.awt.event.MouseEvent;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,6 +48,17 @@ class SimulationControllerTest {
         assertFalse(simulation.isOccupied(5, 5));
     }
 
+    @Test
+    void rightClickOnOccupiedCellKeepsCellAndAppliesAlternativeType() {
+        GridPosition position = new GridPosition(5, 5);
+        simulation.placeCell(position.row(), position.column(), CellType.CONWAY);
+
+        controller.handleBoardInteraction(position, rightClick());
+
+        assertTrue(simulation.isOccupied(position.row(), position.column()));
+        assertEquals(CellType.ALTERNATIVE, simulation.getSnapshot().cells().get(position).getType());
+    }
+
     private MouseEvent leftClick() {
         return new MouseEvent(
                 new JPanel(),
@@ -58,6 +70,20 @@ class SimulationControllerTest {
                 1,
                 false,
                 MouseEvent.BUTTON1
+        );
+    }
+
+    private MouseEvent rightClick() {
+        return new MouseEvent(
+                new JPanel(),
+                MouseEvent.MOUSE_PRESSED,
+                System.currentTimeMillis(),
+                0,
+                5,
+                5,
+                1,
+                false,
+                MouseEvent.BUTTON3
         );
     }
 }
