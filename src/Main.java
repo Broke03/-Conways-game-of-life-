@@ -3,6 +3,6 @@ public final class Main {
     }
 
     public static void main(String[] args) {
-        life.main.Main.main(args);
+        life.main.Hoofd.main(args);
     }
 }
