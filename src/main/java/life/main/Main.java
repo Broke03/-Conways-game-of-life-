@@ -9,8 +9,8 @@ import life.gui.SimulatieVenster;
 
 import javax.swing.SwingUtilities;
 
-public final class Hoofd {
-    private Hoofd() {
+public final class Main {
+    private Main() {
     }
 
     public static void main(String[] args) {
