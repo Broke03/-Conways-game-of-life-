@@ -58,6 +58,10 @@ public final class LifeSimulation implements TickListener {
         notifyListeners();
     }
 
+    public boolean isOccupied(int row, int column) {
+        return seedBoard.isOccupied(row, column);
+    }
+
     public void start() {
         activeBoard = seedBoard.copy();
         gameClock.start();

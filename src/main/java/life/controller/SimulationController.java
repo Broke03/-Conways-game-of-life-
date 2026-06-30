@@ -48,6 +48,11 @@ public final class SimulationController {
     }
 
     public void handleBoardInteraction(GridPosition position, MouseEvent event) {
+        if (!SwingUtilities.isRightMouseButton(event) && simulation.isOccupied(position.row(), position.column())) {
+            simulation.removeCell(position.row(), position.column());
+            return;
+        }
+
         if (SwingUtilities.isRightMouseButton(event)) {
             simulation.placeCell(position.row(), position.column(), CellType.ALTERNATIVE);
             return;
